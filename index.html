@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Say Sorry Like This</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        :root {
+            --primary: #FF4D6D;
+            --primary-light: #FF758C;
+            --primary-dark: #E83E5C;
+            --bg: #FFF5F7;
+            --text: #4A4A4A;
+            --text-light: #888;
+            --white: #ffffff;
+            --shadow: 0 10px 40px rgba(255, 77, 109, 0.15);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            color: var(--text);
+        }
+
+        #heartsCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .pages-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+            opacity: 0;
+            transform: translateX(100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .page.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 10;
+            pointer-events: all;
+        }
+
+        .page.prev {
+            transform: translateX(-30%);
+            opacity: 0;
+        }
+
+        /* PAGE 1 */
+        .landing-content {
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bear-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 20px;
+        }
+
+        .bear-circle {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #B8E3FF 0%, #E0F0FF 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 8px 30px rgba(184, 227, 255, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .heart-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+            z-index: 5;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .heart-badge svg { width: 20px; height: 20px; fill: white; }
+
+        .bubble-text {
+            display: inline-block;
+            background: rgba(0,0,0,0.75);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 15px;
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        .main-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 36px;
+            color: var(--text);
+            margin: 15px 0 10px;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .main-title .emoji { font-family: 'Segoe UI Emoji', sans-serif; }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 25px;
+            animation: fadeInUp 0.8s ease 0.5s both;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        .btn-primary:active { transform: scale(0.95); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 50px rgba(255, 77, 109, 0.25); }
+
+        /* PAGE 2 */
+        .letter-page {
+            justify-content: flex-start;
+            padding-top: 60px;
+            overflow-y: auto;
+        }
+
+        .letter-header {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .page-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .music-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.6;
+        }
+
+        .pagination-dots {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 25px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active { background: var(--primary); width: 20px; border-radius: 3px; }
+
+        .letter-content {
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .letter-dear {
+            font-family: 'Dancing Script', cursive;
+            font-size: 28px;
+            color: var(--text);
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .letter-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 18px;
+            line-height: 1.8;
+            color: var(--text);
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .letter-text p { margin-bottom: 15px; }
+
+        .letter-image-container {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 15px;
+        }
+
+        .letter-image-circle {
+            width: 160px;
+            height: 160px;
+            background: linear-gradient(135deg, #FFE4EC 0%, #FFF0F5 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(255, 182, 193, 0.3);
+        }
+
+        .hindi-caption {
+            display: inline-block;
+            background: rgba(0,0,0,0.75);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 25px;
+        }
+
+        /* PAGE 3 */
+        .meter-page { text-align: center; }
+
+        .meter-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 32px;
+            color: var(--primary-dark);
+            margin-bottom: 30px;
+        }
+
+        .meter-bear-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+        }
+
+        .meter-bear-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+            box-shadow: 0 8px 30px rgba(255, 77, 109, 0.15);
+        }
+
+        .meter-status {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            min-height: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .progress-container {
+            width: 280px;
+            height: 12px;
+            background: #FFE4EC;
+            border-radius: 10px;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary) 100%);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 20px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .percentage-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        .tap-instruction {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        .heart-tap-btn {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 30px rgba(255, 77, 109, 0.3);
+            transition: all 0.1s ease;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .heart-tap-btn:active { transform: scale(0.9); }
+
+        .heart-tap-btn svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .heart-tap-btn::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--primary);
+            opacity: 0.4;
+            animation: ripple 2s infinite;
+        }
+
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 0.4; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .tap-effect {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: tap-expand 0.6s ease-out forwards;
+            opacity: 0.6;
+        }
+
+        @keyframes tap-expand {
+            0% { transform: scale(0); opacity: 0.6; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        .floating-tap-heart {
+            position: absolute;
+            color: var(--primary);
+            font-size: 20px;
+            pointer-events: none;
+            animation: float-heart-up 1s ease-out forwards;
+        }
+
+        @keyframes float-heart-up {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+        }
+
+        .bear-svg { width: 120px; height: 120px; }
+        .bear-svg-small { width: 100px; height: 100px; }
+
+        .letter-page::-webkit-scrollbar { display: none; }
+        .letter-page { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @media (max-height: 700px) {
+            .letter-page { padding-top: 40px; }
+            .bear-container { width: 150px; height: 150px; }
+            .bear-circle { width: 150px; height: 150px; }
+            .main-title { font-size: 30px; }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <canvas id="heartsCanvas"></canvas>
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <div class="pages-container">
+        <!-- PAGE 1 -->
+        <div class="page active" id="page1">
+            <div class="landing-content">
+                <div class="bear-container">
+                    <div class="bear-circle">
+                        <svg class="bear-svg" viewBox="0 0 120 120" fill="none">
+                            <circle cx="35" cy="35" r="14" fill="#C68E5F"/>
+                            <circle cx="85" cy="35" r="14" fill="#C68E5F"/>
+                            <circle cx="35" cy="35" r="8" fill="#E8B89A"/>
+                            <circle cx="85" cy="35" r="8" fill="#E8B89A"/>
+                            <circle cx="60" cy="60" r="35" fill="#D4A373"/>
+                            <ellipse cx="60" cy="68" rx="18" ry="14" fill="#E8B89A"/>
+                            <ellipse cx="60" cy="64" rx="5" ry="4" fill="#5C4033"/>
+                            <path d="M55 72 Q60 68 65 72" stroke="#5C4033" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                            <circle cx="48" cy="55" r="4" fill="#5C4033"/>
+                            <circle cx="72" cy="55" r="4" fill="#5C4033"/>
+                            <circle cx="49" cy="54" r="1.5" fill="white"/>
+                            <circle cx="73" cy="54" r="1.5" fill="white"/>
+                            <path d="M45 60 Q43 68 45 74 Q47 68 45 60" fill="#87CEEB" opacity="0.8"/>
+                            <path d="M75 60 Q77 68 75 74 Q73 68 75 60" fill="#87CEEB" opacity="0.8"/>
+                            <circle cx="45" cy="76" r="2" fill="#87CEEB" opacity="0.6"/>
+                            <circle cx="75" cy="76" r="2" fill="#87CEEB" opacity="0.6"/>
+                            <ellipse cx="42" cy="65" rx="5" ry="3" fill="#FFB6C1" opacity="0.5"/>
+                            <ellipse cx="78" cy="65" rx="5" ry="3" fill="#FFB6C1" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="heart-badge">
+                        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </div>
+                </div>
+                <div class="bubble-text">I am sorry. Please forgive me 💔</div>
+                <h1 class="main-title">I Messed Up, Chetana<span class="emoji">😢</span></h1>
+                <p class="subtitle">But I am ready to make it right.<br>Will you hear me out?</p>
+                <button class="btn-primary" onclick="goToPage(2)">Listen to my heart 💌</button>
+            </div>
+        </div>
+
+        <!-- PAGE 2 -->
+        <div class="page letter-page" id="page2">
+            <div class="letter-header">
+                <button class="back-btn" onclick="goToPage(1)">&#8592; Back</button>
+                <div class="page-title">A Virtual Peace Offering &#10084;&#65039;</div>
+                <button class="music-btn" onclick="toggleMusic()">&#127925;</button>
+            </div>
+            <div class="pagination-dots">
+                <div class="dot"></div>
+                <div class="dot active"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="letter-content">
+                <div class="letter-dear">My Dearest Chetana,</div>
+                <div class="letter-text">
+                    <p>I am really sorry, my love. I accidentally upset the most precious and adorable person in my life &mdash; you. &#129402;</p>
+                    <p>Please forgive me if I hurt you or wasted even a second of your time being upset. You mean the entire world to me. &#128149;</p>
+                </div>
+                <div class="letter-image-container">
+                    <div class="letter-image-circle">
+                        <svg class="bear-svg-small" viewBox="0 0 100 100" fill="none">
+                            <circle cx="22" cy="28" r="9" fill="#F5F5F5"/>
+                            <circle cx="38" cy="22" r="4.5" fill="#F5F5F5"/>
+                            <circle cx="12" cy="22" r="4.5" fill="#F5F5F5"/>
+                            <circle cx="22" cy="28" r="5" fill="#FFE4E1"/>
+                            <circle cx="22" cy="45" r="12" fill="#F5F5F5"/>
+                            <ellipse cx="22" cy="48" rx="7" ry="5" fill="#FFE4E1"/>
+                            <circle cx="20" cy="43" r="1.2" fill="#333"/>
+                            <circle cx="24" cy="43" r="1.2" fill="#333"/>
+                            <ellipse cx="22" cy="46" rx="1.5" ry="1" fill="#333"/>
+                            <ellipse cx="18" cy="50" rx="2.5" ry="1.5" fill="#FFB6C1" opacity="0.4"/>
+                            <circle cx="78" cy="28" r="9" fill="#D4A373"/>
+                            <circle cx="88" cy="22" r="4.5" fill="#D4A373"/>
+                            <circle cx="68" cy="22" r="4.5" fill="#D4A373"/>
+                            <circle cx="78" cy="28" r="5" fill="#E8B89A"/>
+                            <circle cx="78" cy="45" r="12" fill="#D4A373"/>
+                            <ellipse cx="78" cy="48" rx="7" ry="5" fill="#E8B89A"/>
+                            <circle cx="76" cy="43" r="1.2" fill="#333"/>
+                            <circle cx="80" cy="43" r="1.2" fill="#333"/>
+                            <ellipse cx="78" cy="46" rx="1.5" ry="1" fill="#333"/>
+                            <ellipse cx="82" cy="50" rx="2.5" ry="1.5" fill="#FFB6C1" opacity="0.4"/>
+                            <path d="M32 45 Q50 55 68 45" stroke="#E8B89A" stroke-width="3" fill="none" stroke-linecap="round"/>
+                            <text x="45" y="18" font-size="8" fill="#FF4D6D">&#10084;&#65039;</text>
+                        </svg>
+                    </div>
+                </div>
+                <div class="hindi-caption">Itna Gussa aap par acha nahi lagta,This won't repeat &#128148;</div>
+                <button class="btn-primary" onclick="goToPage(3)">Continue &#8594;</button>
+            </div>
+        </div>
+
+        <!-- PAGE 3 -->
+        <div class="page meter-page" id="page3">
+            <div class="letter-header" style="position:absolute; top:20px; left:0; width:100%; padding:0 20px;">
+                <button class="back-btn" onclick="goToPage(2)">&#8592; Back</button>
+                <button class="music-btn" onclick="toggleMusic()">&#127925;</button>
+            </div>
+            <div class="pagination-dots" style="margin-top:60px; margin-bottom:20px;">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot active"></div>
+            </div>
+            <h2 class="meter-title">FORGIVENESS METER &#10084;&#65039;</h2>
+            <div class="meter-bear-container">
+                <div class="meter-bear-circle" id="meterBearCircle" style="background: linear-gradient(135deg, #FFE4EC 0%, #FFF0F5 100%);">
+                    <div id="meterBearSvg">
+                        <svg class="bear-svg-small" viewBox="0 0 100 100" fill="none">
+                            <circle cx="25" cy="25" r="10" fill="#C68E5F"/>
+                            <circle cx="75" cy="25" r="10" fill="#C68E5F"/>
+                            <circle cx="25" cy="25" r="6" fill="#E8B89A"/>
+                            <circle cx="75" cy="25" r="6" fill="#E8B89A"/>
+                            <circle cx="50" cy="50" r="28" fill="#D4A373"/>
+                            <ellipse cx="50" cy="56" rx="14" ry="11" fill="#E8B89A"/>
+                            <ellipse cx="50" cy="53" rx="4" ry="3" fill="#5C4033"/>
+                            <path d="M46 60 Q50 57 54 60" stroke="#5C4033" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                            <circle cx="40" cy="46" r="3" fill="#5C4033"/>
+                            <circle cx="60" cy="46" r="3" fill="#5C4033"/>
+                            <circle cx="41" cy="45" r="1" fill="white"/>
+                            <circle cx="61" cy="45" r="1" fill="white"/>
+                            <path d="M37 50 Q35 56 37 61 Q39 56 37 50" fill="#87CEEB" opacity="0.7"/>
+                            <path d="M63 50 Q65 56 63 61 Q61 56 63 50" fill="#87CEEB" opacity="0.7"/>
+                            <ellipse cx="35" cy="55" rx="4" ry="2.5" fill="#FFB6C1" opacity="0.4"/>
+                            <ellipse cx="65" cy="55" rx="4" ry="2.5" fill="#FFB6C1" opacity="0.4"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="meter-status" id="meterStatus">SORRY NA &#129402;</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="percentage-text" id="percentageText">0% FORGIVEN</div>
+            <div class="tap-instruction">TAP THE HEART TO HEAL MY HEART! &#128149;</div>
+            <button class="heart-tap-btn" id="heartTapBtn" onclick="tapHeart(event)">
+                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Floating Hearts Background
+        const canvas = document.getElementById('heartsCanvas');
+        const ctx = canvas.getContext('2d');
+        let hearts = [];
+        let w, h;
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        class Heart {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * w;
+                this.y = h + Math.random() * 50;
+                this.size = Math.random() * 15 + 8;
+                this.speed = Math.random() * 1 + 0.5;
+                this.sway = Math.random() * 2 - 1;
+                this.swaySpeed = Math.random() * 0.02 + 0.01;
+                this.opacity = Math.random() * 0.4 + 0.1;
+                this.hue = Math.random() > 0.5 ? '#FF4D6D' : '#FFB6C1';
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotSpeed = Math.random() * 0.02 - 0.01;
+            }
+            update() {
+                this.y -= this.speed;
+                this.x += Math.sin(this.y * this.swaySpeed) * this.sway;
+                this.rotation += this.rotSpeed;
+                if (this.y < -50) this.reset();
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.hue;
+                const s = this.size;
+                ctx.beginPath();
+                ctx.moveTo(0, s * 0.3);
+                ctx.bezierCurveTo(-s * 0.5, -s * 0.3, -s, s * 0.1, 0, s * 0.9);
+                ctx.bezierCurveTo(s, s * 0.1, s * 0.5, -s * 0.3, 0, s * 0.3);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < 25; i++) {
+            hearts.push(new Heart());
+            hearts[i].y = Math.random() * h;
+        }
+
+        function animateHearts() {
+            ctx.clearRect(0, 0, w, h);
+            hearts.forEach(h => { h.update(); h.draw(); });
+            requestAnimationFrame(animateHearts);
+        }
+        animateHearts();
+
+        // Page Navigation
+        let currentPage = 1;
+        function goToPage(pageNum) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach((page, idx) => {
+                page.classList.remove('active', 'prev');
+                if (idx + 1 === pageNum) page.classList.add('active');
+                else if (idx + 1 < pageNum) page.classList.add('prev');
+            });
+            currentPage = pageNum;
+        }
+
+        // Forgiveness Meter
+        let forgivenessPercent = 0;
+        let meterState = 0;
+
+        const meterStates = [
+            { percent: 0, text: 'SORRY NA &#129402;', bg: 'linear-gradient(135deg, #FFE4EC 0%, #FFF0F5 100%)' },
+            { percent: 30, text: 'Warming Up... &#128149;', bg: 'linear-gradient(135deg, #FFE4EC 0%, #FFF0F5 100%)' },
+            { percent: 60, text: 'Almost There... &#128527;', bg: 'linear-gradient(135deg, #E8F5E9 0%, #FFF8E1 100%)' },
+            { percent: 90, text: 'Almost There... &#128527;', bg: 'linear-gradient(135deg, #E8F5E9 0%, #FFF8E1 100%)' },
+            { percent: 100, text: 'FORGIVEN! &#127881;', bg: 'linear-gradient(135deg, #FFF8E1 0%, #E8F5E9 100%)' }
+        ];
+
+        const bearSvgs = {
+            0: `<svg class="bear-svg-small" viewBox="0 0 100 100" fill="none">
+                <circle cx="25" cy="25" r="10" fill="#C68E5F"/><circle cx="75" cy="25" r="10" fill="#C68E5F"/>
+                <circle cx="25" cy="25" r="6" fill="#E8B89A"/><circle cx="75" cy="25" r="6" fill="#E8B89A"/>
+                <circle cx="50" cy="50" r="28" fill="#D4A373"/><ellipse cx="50" cy="56" rx="14" ry="11" fill="#E8B89A"/>
+                <ellipse cx="50" cy="53" rx="4" ry="3" fill="#5C4033"/>
+                <path d="M46 60 Q50 57 54 60" stroke="#5C4033" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <circle cx="40" cy="46" r="3" fill="#5C4033"/><circle cx="60" cy="46" r="3" fill="#5C4033"/>
+                <circle cx="41" cy="45" r="1" fill="white"/><circle cx="61" cy="45" r="1" fill="white"/>
+                <path d="M37 50 Q35 56 37 61 Q39 56 37 50" fill="#87CEEB" opacity="0.7"/>
+                <path d="M63 50 Q65 56 63 61 Q61 56 63 50" fill="#87CEEB" opacity="0.7"/>
+                <ellipse cx="35" cy="55" rx="4" ry="2.5" fill="#FFB6C1" opacity="0.4"/>
+                <ellipse cx="65" cy="55" rx="4" ry="2.5" fill="#FFB6C1" opacity="0.4"/>
+            </svg>`,
+            1: `<svg class="bear-svg-small" viewBox="0 0 100 100" fill="none">
+                <circle cx="25" cy="25" r="10" fill="#C68E5F"/><circle cx="75" cy="25" r="10" fill="#C68E5F"/>
+                <circle cx="25" cy="25" r="6" fill="#E8B89A"/><circle cx="75" cy="25" r="6" fill="#E8B89A"/>
+                <circle cx="50" cy="50" r="28" fill="#D4A373"/><ellipse cx="50" cy="56" rx="14" ry="11" fill="#E8B89A"/>
+                <ellipse cx="50" cy="53" rx="4" ry="3" fill="#5C4033"/>
+                <path d="M46 60 Q50 57 54 60" stroke="#5C4033" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <circle cx="40" cy="46" r="3" fill="#5C4033"/><circle cx="60" cy="46" r="3" fill="#5C4033"/>
+                <circle cx="41" cy="45" r="1" fill="white"/><circle cx="61" cy="45" r="1" fill="white"/>
+                <path d="M37 52 Q35 57 37 60" stroke="#87CEEB" stroke-width="1.5" fill="none" opacity="0.5"/>
+                <path d="M63 52 Q65 57 63 60" stroke="#87CEEB" stroke-width="1.5" fill="none" opacity="0.5"/>
+                <ellipse cx="35" cy="55" rx="4" ry="2.5" fill="#FFB6C1" opacity="0.4"/>
+                <ellipse cx="65" cy="55" rx="4" ry="2.5" fill="#FFB6C1" opacity="0.4"/>
+            </svg>`,
+            2: `<svg class="bear-svg-small" viewBox="0 0 100 100" fill="none">
+                <circle cx="25" cy="25" r="10" fill="#C68E5F"/><circle cx="75" cy="25" r="10" fill="#C68E5F"/>
+                <circle cx="25" cy="25" r="6" fill="#E8B89A"/><circle cx="75" cy="25" r="6" fill="#E8B89A"/>
+                <circle cx="50" cy="50" r="28" fill="#D4A373"/><ellipse cx="50" cy="56" rx="14" ry="11" fill="#E8B89A"/>
+                <ellipse cx="50" cy="53" rx="4" ry="3" fill="#5C4033"/>
+                <path d="M46 58 Q50 62 54 58" stroke="#5C4033" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <circle cx="40" cy="46" r="3" fill="#5C4033"/><circle cx="60" cy="46" r="3" fill="#5C4033"/>
+                <circle cx="41" cy="45" r="1" fill="white"/><circle cx="61" cy="45" r="1" fill="white"/>
+                <ellipse cx="35" cy="55" rx="4" ry="2.5" fill="#FFB6C1" opacity="0.5"/>
+                <ellipse cx="65" cy="55" rx="4" ry="2.5" fill="#FFB6C1" opacity="0.5"/>
+            </svg>`,
+            3: `<svg class="bear-svg-small" viewBox="0 0 100 100" fill="none">
+                <circle cx="22" cy="28" r="9" fill="#F5F5F5"/><circle cx="38" cy="22" r="4.5" fill="#F5F5F5"/><circle cx="12" cy="22" r="4.5" fill="#F5F5F5"/>
+                <circle cx="22" cy="28" r="5" fill="#FFE4E1"/><circle cx="22" cy="45" r="12" fill="#F5F5F5"/>
+                <ellipse cx="22" cy="48" rx="7" ry="5" fill="#FFE4E1"/><circle cx="20" cy="43" r="1.2" fill="#333"/><circle cx="24" cy="43" r="1.2" fill="#333"/>
+                <ellipse cx="22" cy="46" rx="1.5" ry="1" fill="#333"/><ellipse cx="18" cy="50" rx="2.5" ry="1.5" fill="#FFB6C1" opacity="0.4"/>
+                <circle cx="78" cy="28" r="9" fill="#D4A373"/><circle cx="88" cy="22" r="4.5" fill="#D4A373"/><circle cx="68" cy="22" r="4.5" fill="#D4A373"/>
+                <circle cx="78" cy="28" r="5" fill="#E8B89A"/><circle cx="78" cy="45" r="12" fill="#D4A373"/>
+                <ellipse cx="78" cy="48" rx="7" ry="5" fill="#E8B89A"/><circle cx="76" cy="43" r="1.2" fill="#333"/><circle cx="80" cy="43" r="1.2" fill="#333"/>
+                <ellipse cx="78" cy="46" rx="1.5" ry="1" fill="#333"/><ellipse cx="82" cy="50" rx="2.5" ry="1.5" fill="#FFB6C1" opacity="0.4"/>
+                <path d="M32 45 Q50 55 68 45" stroke="#E8B89A" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <text x="45" y="18" font-size="8" fill="#FF4D6D">&#10084;&#65039;</text>
+            </svg>`,
+            4: `<svg class="bear-svg-small" viewBox="0 0 100 100" fill="none">
+                <circle cx="25" cy="25" r="10" fill="#E8D5C4"/><circle cx="75" cy="25" r="10" fill="#E8D5C4"/>
+                <circle cx="25" cy="25" r="6" fill="#FFF5EE"/><circle cx="75" cy="25" r="6" fill="#FFF5EE"/>
+                <circle cx="50" cy="50" r="28" fill="#FFF8F0"/><ellipse cx="50" cy="56" rx="14" ry="11" fill="#FFF5EE"/>
+                <ellipse cx="50" cy="53" rx="4" ry="3" fill="#5C4033"/>
+                <path d="M46 58 Q50 62 54 58" stroke="#5C4033" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <circle cx="40" cy="46" r="3" fill="#5C4033"/><circle cx="60" cy="46" r="3" fill="#5C4033"/>
+                <circle cx="41" cy="45" r="1" fill="white"/><circle cx="61" cy="45" r="1" fill="white"/>
+                <ellipse cx="35" cy="55" rx="4" ry="2.5" fill="#FFB6C1" opacity="0.6"/>
+                <ellipse cx="65" cy="55" rx="4" ry="2.5" fill="#FFB6C1" opacity="0.6"/>
+                <text x="38" y="30" font-size="12" fill="#FF4D6D">&#10024;</text>
+                <text x="55" y="30" font-size="12" fill="#FF4D6D">&#10024;</text>
+                <text x="30" y="80" font-size="10" fill="#FFB6C1">&#127800;</text>
+                <text x="65" y="80" font-size="10" fill="#FFB6C1">&#127800;</text>
+            </svg>`
+        };
+
+        function tapHeart(event) {
+            if (forgivenessPercent >= 100) {
+                createConfetti();
+                return;
+            }
+            const increase = Math.floor(Math.random() * 8) + 8;
+            forgivenessPercent = Math.min(100, forgivenessPercent + increase);
+
+            document.getElementById('progressBar').style.width = forgivenessPercent + '%';
+            document.getElementById('percentageText').textContent = forgivenessPercent + '% FORGIVEN';
+
+            let newState = 0;
+            if (forgivenessPercent >= 100) newState = 4;
+            else if (forgivenessPercent >= 80) newState = 3;
+            else if (forgivenessPercent >= 50) newState = 2;
+            else if (forgivenessPercent >= 25) newState = 1;
+
+            if (newState !== meterState) {
+                meterState = newState;
+                document.getElementById('meterStatus').innerHTML = meterStates[newState].text;
+                document.getElementById('meterBearCircle').style.background = meterStates[newState].bg;
+                document.getElementById('meterBearSvg').innerHTML = bearSvgs[newState];
+            }
+
+            const btn = document.getElementById('heartTapBtn');
+            const rect = btn.getBoundingClientRect();
+
+            const ripple = document.createElement('div');
+            ripple.className = 'tap-effect';
+            ripple.style.left = (event.clientX - rect.left - 15) + 'px';
+            ripple.style.top = (event.clientY - rect.top - 15) + 'px';
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+
+            const heart = document.createElement('div');
+            heart.className = 'floating-tap-heart';
+            heart.innerHTML = '&#10084;&#65039;';
+            heart.style.left = (event.clientX - 10) + 'px';
+            heart.style.top = (event.clientY - 10) + 'px';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1000);
+
+            if (forgivenessPercent >= 100) {
+                document.getElementById('meterStatus').innerHTML = 'FORGIVEN! &#127881;';
+                setTimeout(createConfetti, 300);
+            }
+        }
+
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            const colors = ['#FF4D6D', '#FFB6C1', '#FFD700', '#FF69B4', '#FFA07A', '#87CEEB', '#98FB98'];
+            for (let i = 0; i < 60; i++) {
+                setTimeout(() => {
+                    const conf = document.createElement('div');
+                    conf.className = 'confetti';
+                    conf.style.left = Math.random() * 100 + '%';
+                    conf.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    conf.style.width = (Math.random() * 8 + 6) + 'px';
+                    conf.style.height = (Math.random() * 8 + 6) + 'px';
+                    conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    conf.style.animationDelay = (Math.random() * 0.5) + 's';
+                    container.appendChild(conf);
+                    setTimeout(() => conf.remove(), 4000);
+                }, i * 30);
+            }
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const h = document.createElement('div');
+                    h.className = 'floating-tap-heart';
+                    h.innerHTML = ['&#10084;&#65039;', '&#128149;', '&#128150;', '&#128151;'][Math.floor(Math.random() * 4)];
+                    h.style.left = Math.random() * window.innerWidth + 'px';
+                    h.style.top = window.innerHeight + 'px';
+                    h.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                    h.style.animation = 'float-heart-up 2s ease-out forwards';
+                    document.body.appendChild(h);
+                    setTimeout(() => h.remove(), 2000);
+                }, i * 100);
+            }
+        }
+
+        let musicOn = false;
+        function toggleMusic() {
+            musicOn = !musicOn;
+            document.querySelectorAll('.music-btn').forEach(btn => {
+                btn.style.opacity = musicOn ? '1' : '0.6';
+            });
+        }
+    </script>
+</body>
+</html>
